@@ -4,30 +4,26 @@ import datetime
 
 app = Flask(__name__)
 
-# Вчитување на лиценци од JSON
+# ---------- Load licenses from JSON ----------
 with open("licenses.json", "r") as f:
     licenses = json.load(f)
 
-REQUIRED_VERSION = "2.5"
-
+# ---------- License check endpoint ----------
 @app.route("/check_license", methods=["POST"])
-def check_license():
+def check_license_route():
     data = request.get_json()
     license_key = data.get("license")
-    client_version = data.get("version", "")
-
-    # Блокирај секоја стара верзија освен 2.5
-    if client_version != REQUIRED_VERSION:
-        return jsonify({"status": "OLD_VERSION", "message": f"Update required: {REQUIRED_VERSION} only."})
 
     if license_key in licenses:
         expiry_date = datetime.datetime.strptime(licenses[license_key]["expiry"], "%Y-%m-%d")
         if datetime.datetime.now() < expiry_date:
-            return jsonify({"status": "VALID"})
+            return jsonify({"status": "VALID", "message": "License OK"})
         else:
-            return jsonify({"status": "EXPIRED"})
+            return jsonify({"status": "EXPIRED", "message": "License expired"})
     else:
-        return jsonify({"status": "BLOCKED"})
+        return jsonify({"status": "BLOCKED", "message": "Invalid license"})
 
+# ---------- Run server ----------
 if __name__ == "__main__":
+    # Локално тестирање или пристап од други компјутери
     app.run(host="0.0.0.0", port=5000)
