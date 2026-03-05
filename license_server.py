@@ -1,18 +1,21 @@
 from flask import Flask, request, jsonify
 import json
 import datetime
+import hashlib
 
 app = Flask(__name__)
 
-# ---------- Load licenses ----------
 with open("licenses.json", "r") as f:
     licenses = json.load(f)
 
-# ---------- Active sessions ----------
 active_sessions = {}
 
 APP_VERSION = "2.5"
 LOCK_MINUTES = 15
+
+
+def hash_machine_id(machine_id):
+    return hashlib.sha256(machine_id.encode()).hexdigest()
 
 
 @app.route("/check_license", methods=["POST"])
@@ -22,16 +25,15 @@ def check_license():
 
     license_key = data.get("license")
     ip = data.get("ip")
+    machine_id = data.get("machine_id")
     client_version = data.get("version", "")
 
-    # ---------- VERSION CHECK ----------
     if client_version != APP_VERSION:
         return jsonify({
             "status": "OLD_VERSION",
             "message": "Update to version 2.5"
         })
 
-    # ---------- LICENSE EXISTS ----------
     if license_key not in licenses:
         return jsonify({
             "status": "BLOCKED",
@@ -40,7 +42,6 @@ def check_license():
 
     now = datetime.datetime.now()
 
-    # ---------- EXPIRY CHECK ----------
     expiry_date = datetime.datetime.strptime(
         licenses[license_key]["expiry"],
         "%Y-%m-%d"
@@ -52,28 +53,28 @@ def check_license():
             "message": "License expired"
         })
 
-    # ---------- SESSION CHECK ----------
+    machine_hash = hash_machine_id(machine_id)
+
     session = active_sessions.get(license_key)
 
     if session:
 
-        session_ip = session["ip"]
+        session_machine = session["machine_id"]
         last_time = session["time"]
 
         diff = (now - last_time).total_seconds()
 
-        # ако поминале 15 минути → нова IP може
         if diff > LOCK_MINUTES * 60:
 
             active_sessions[license_key] = {
                 "ip": ip,
+                "machine_id": machine_hash,
                 "time": now
             }
 
         else:
 
-            # иста IP → освежи време
-            if session_ip == ip:
+            if session_machine == machine_hash:
 
                 active_sessions[license_key]["time"] = now
 
@@ -86,9 +87,9 @@ def check_license():
 
     else:
 
-        # прво користење
         active_sessions[license_key] = {
             "ip": ip,
+            "machine_id": machine_hash,
             "time": now
         }
 
