@@ -1,62 +1,82 @@
 {
   "ABC123-XYZ": {
-    "expiry": "2027-12-31"
+    "expiry": "2027-12-31",
+    "machines": []
   },
   "DEF456-UVW": {
-    "expiry": "2027-06-30"
+    "expiry": "2027-06-30",
+    "machines": []
   },
   "GHI789-RST": {
-    "expiry": "2027-01-15"
+    "expiry": "2027-01-15",
+    "machines": []
   },
   "LIC001-CISKE": {
-    "expiry": "2026-04-14"
+    "expiry": "2026-04-14",
+    "machines": []
   },
   "LIC002-KoozRj": {
-    "expiry": "2026-03-09"
+    "expiry": "2026-03-09",
+    "machines": []
   },
   "LIC003-Johnny": {
-    "expiry": "2026-03-09"
+    "expiry": "2026-03-09",
+    "machines": []
   },
   "LIC004-NIK": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC005-MARK": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC006-JETEEN": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC007-TERESSA": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC008-RU": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC009-TINAM": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC010-MIHAI": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC011-LALA": {
-    "expiry": "2026-03-13"
+    "expiry": "2026-03-13",
+    "machines": []
   },
   "LIC022-LALA": {
-    "expiry": "2026-03-29"
+    "expiry": "2026-03-29",
+    "machines": []
   },
   "LIC013-LADYWOLF": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC014-THEODOR": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC015-SAMY": {
-    "expiry": "2026-04-07"
+    "expiry": "2026-04-07",
+    "machines": []
   },
   "LIC016-MAR": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   },
   "LIC017-MAR": {
-    "expiry": "2026-03-03"
+    "expiry": "2026-03-03",
+    "machines": []
   }
 }
