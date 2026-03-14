@@ -1,38 +1,59 @@
 from flask import Flask, request, jsonify
 import json
-import datetime
 import hashlib
+import datetime
 
 app = Flask(__name__)
 
-with open("licenses.json", "r") as f:
-    licenses = json.load(f)
+LICENSE_FILE = "licenses.json"
 
+SERVER_SECRET = "RR_SERVER_SECRET_2026"
+
+# runtime active sessions
 active_sessions = {}
 
-APP_VERSION = "2.5"
-LOCK_MINUTES = 15
+
+def load_licenses():
+    with open(LICENSE_FILE) as f:
+        return json.load(f)
 
 
-def hash_machine_id(machine_id):
-    return hashlib.sha256(machine_id.encode()).hexdigest()
+def save_licenses(data):
+    with open(LICENSE_FILE, "w") as f:
+        json.dump(data, f, indent=4)
+
+
+def hash_machine(machine):
+    return hashlib.sha256(machine.encode()).hexdigest()
+
+
+def ip_prefix(ip):
+    parts = ip.split(".")
+    return ".".join(parts[:3])
+
+
+def make_signature(license_key, machine_hash):
+    raw = license_key + machine_hash + SERVER_SECRET
+    return hashlib.sha256(raw.encode()).hexdigest()
 
 
 @app.route("/check_license", methods=["POST"])
-def check_license():
+def check():
 
-    data = request.get_json()
+    data = request.json
 
     license_key = data.get("license")
-    ip = data.get("ip")
     machine_id = data.get("machine_id")
-    client_version = data.get("version", "")
+    ip = data.get("ip")
+    version = data.get("version")
 
-    if client_version != APP_VERSION:
+    if version not in ["2.5", "3.0"]:
         return jsonify({
-            "status": "OLD_VERSION",
-            "message": "Update to version 2.5"
+            "status": "BLOCKED",
+            "message": "Version not allowed"
         })
+
+    licenses = load_licenses()
 
     if license_key not in licenses:
         return jsonify({
@@ -40,64 +61,66 @@ def check_license():
             "message": "Invalid license"
         })
 
-    now = datetime.datetime.now()
+    lic = licenses[license_key]
 
-    expiry_date = datetime.datetime.strptime(
-        licenses[license_key]["expiry"],
+    expiry = datetime.datetime.strptime(
+        lic["expiry"],
         "%Y-%m-%d"
     )
 
-    if now > expiry_date:
+    if datetime.datetime.now() > expiry:
         return jsonify({
-            "status": "EXPIRED",
-            "message": "License expired"
+            "status": "EXPIRED"
         })
 
-    machine_hash = hash_machine_id(machine_id)
+    machine_hash = hash_machine(machine_id)
+
+    if "machines" not in lic:
+        lic["machines"] = []
+
+    machines = lic["machines"]
+
+    # max 2 machines
+    if machine_hash not in machines:
+
+        if len(machines) >= 2:
+
+            return jsonify({
+                "status": "BLOCKED",
+                "message": "Machine limit reached"
+            })
+
+        machines.append(machine_hash)
+
+        save_licenses(licenses)
+
+    prefix = ip_prefix(ip)
 
     session = active_sessions.get(license_key)
 
     if session:
 
-        session_machine = session["machine_id"]
-        last_time = session["time"]
+        if session["prefix"] != prefix:
 
-        diff = (now - last_time).total_seconds()
+            return jsonify({
+                "status": "BLOCKED",
+                "message": "Different IP network"
+            })
 
-        if diff > LOCK_MINUTES * 60:
+    active_sessions[license_key] = {
+        "prefix": prefix,
+        "time": str(datetime.datetime.now())
+    }
 
-            active_sessions[license_key] = {
-                "ip": ip,
-                "machine_id": machine_hash,
-                "time": now
-            }
-
-        else:
-
-            if session_machine == machine_hash:
-
-                active_sessions[license_key]["time"] = now
-
-            else:
-
-                return jsonify({
-                    "status": "BLOCKED",
-                    "message": "License already in use"
-                })
-
-    else:
-
-        active_sessions[license_key] = {
-            "ip": ip,
-            "machine_id": machine_hash,
-            "time": now
-        }
+    signature = make_signature(license_key, machine_hash)
 
     return jsonify({
         "status": "VALID",
-        "message": "License OK"
+        "signature": signature
     })
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+import os
+
+port = int(os.environ.get("PORT", 5000))
+app.run(host="0.0.0.0", port=port)
