@@ -1,10 +1,10 @@
 {
   "ABC123-XYZ": {
-    "expiry": "2027-12-31",
+    "expiry": "2027-12-30",
     "machines": []
   },
   "DEF456-UVW": {
-    "expiry": "2027-06-30",
+    "expiry": "2027-06-29",
     "machines": []
   },
   "GHI789-RST": {
