@@ -1,10 +1,10 @@
 {
   "ABC123-XYZ": {
-    "expiry": "2027-12-30",
+    "expiry": "2027-12-31",
     "machines": []
   },
   "DEF456-UVW": {
-    "expiry": "2027-06-29",
+    "expiry": "2027-06-30",
     "machines": []
   },
   "GHI789-RST": {
@@ -56,7 +56,7 @@
     "machines": []
   },
   "LIC022-LALA": {
-    "expiry": "2026-03-29",
+    "expiry": "2026-03-30",
     "machines": []
   },
   "LIC013-LADYWOLF": {
