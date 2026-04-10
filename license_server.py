@@ -5,10 +5,6 @@ import datetime
 
 app = Flask(__name__)
 
-@app.route("/")
-def home():
-    return "OK"
-
 LICENSE_FILE = "licenses.json"
 
 SERVER_SECRET = "RR_SERVER_SECRET_2026"
