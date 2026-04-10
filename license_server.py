@@ -37,6 +37,11 @@ def make_signature(license_key, machine_hash):
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
+@app.route("/")
+def home():
+    return "OK"
+
+
 @app.route("/check_license", methods=["POST"])
 def check():
 
