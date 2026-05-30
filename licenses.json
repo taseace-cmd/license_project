@@ -1,14 +1,14 @@
 {
   "ABC123-XYY6789": {
-    "expiry": "2027-12-31",
+    "expiry": "2027-12-30",
     "machines": []
   },
   "DEF456-UTS": {
-    "expiry": "2027-06-30",
+    "expiry": "2027-06-29",
     "machines": []
   },
   "GHI789-RSD": {
-    "expiry": "2027-01-15",
+    "expiry": "2027-01-16",
     "machines": []
   },
   "LIC001-CISKE": {
